@@ -118,7 +118,7 @@ class DtraceDemoController{
 			throw new RuntimeException("Fail the call once in 100 times");
 		}
 
-		String service = distributedTraceService.getServiceName();
+		String service = "service-" + serviceID;
 		int sid = Integer.parseInt(serviceID);
 		int nServices = Integer.parseInt(maxServices);
 		if (sid == nServices) {

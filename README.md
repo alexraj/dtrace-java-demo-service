@@ -19,9 +19,10 @@ docker run -d -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 -p5775:5775/udp -p6831:6831/udp
 
 ### Packaging
 
+```
 mvn clean package
 docker build -t <docker_repo_url>/dtrace-java-demo-service .
-
+```
 
 ## Deployment
 
@@ -46,6 +47,21 @@ This will start four services, they will listen on ports 9091, 9092, 9093, 9094
 
 ### Running as Container
 TODO
+
+## Verifying
+```
+curl http://localhost:9091/zipkin
+```
+will return one of the following  
+  
+service-1 => service-2 => service-3 => service-4  
+service-1 => service-2 => service-4  
+service-1 => service-3 => service-4  
+service-1 => service-4  
+
+You may get an error too with a probability of 1/100.
+
+Go to http://<zipkin host> to see the traces and dependencies.
 
 ## License
 

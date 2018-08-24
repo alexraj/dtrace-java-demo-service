@@ -1,17 +1,15 @@
 package com.jeeno.dtrace.demo;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.cloud.sleuth.SpanAdjuster;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -19,31 +17,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.jeeno.dtrace.DistributedTraceService;
 
 @SpringBootApplication
 @ComponentScan({"com.jeeno.dtrace.demo"})
 public class DtraceDemoApplication {
 
 	public static void main(String[] args) {
+		String servicePort = System.getProperty("SERVICE_PORT", "9090");
+		String serviceID = System.getProperty("SERVICE_ID");
+		System.getProperties().put("server.port", ( (Integer.parseInt(servicePort) + Integer.parseInt(serviceID)) + "")); 
 		SpringApplication.run(DtraceDemoApplication.class, args);
 	}
-}
-
-@Configuration
-class ServletConfig {
-    @Value("${SERVICE_ID}")
-    private String serviceID;
-
-    @Value("${SERVICE_PORT:9090}")
-    private String servicePort;
-
-    @Bean
-    public EmbeddedServletContainerCustomizer containerCustomizer() {
-        return (container -> {
-            container.setPort(Integer.parseInt(servicePort) + Integer.parseInt(serviceID));
-        });
-    }
 }
 
 @RestController
@@ -89,8 +73,7 @@ class DtraceDemoController{
 	@Bean
 	SpanAdjuster customSpanAdjuster() {
 	    return span -> span.toBuilder().putTag("env", "dev")
-	    		.putTag("service", distributedTraceService.getServiceName())
-	    		.putTag("vm", distributedTraceService.getVm()).build();
+	    		.putTag("service", Constants.SERVICE_PREFIX + serviceID).build();
 	}
 	
 	private static final Logger LOG = Logger.getLogger(DtraceDemoController.class.getName());
@@ -114,7 +97,7 @@ class DtraceDemoController{
 		}
 		
 		if (r.nextInt(100) == 0) {
-			LOG.warn("Request failed once in 100 times");
+			LOG.warning("Request failed once in 100 times");
 			throw new RuntimeException("Fail the call once in 100 times");
 		}
 

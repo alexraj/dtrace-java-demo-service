@@ -37,11 +37,13 @@ LOCAL_SERVICE_IP=\<IP of localhost\>
 SERVICE_PORT=\<Start port number\> #Default 9090  
   
 To start four services  
+
 ```
 java -jar -DSERVICE_ID=1 -DMAX_SERVICES=4 target/dtrace-java-demo-service-0.0.1-SNAPSHOT.jar
 java -jar -DSERVICE_ID=2 -DMAX_SERVICES=4 target/dtrace-java-demo-service-0.0.1-SNAPSHOT.jar
 java -jar -DSERVICE_ID=3 -DMAX_SERVICES=4 target/dtrace-java-demo-service-0.0.1-SNAPSHOT.jar
 java -jar -DSERVICE_ID=4 -DMAX_SERVICES=4 target/dtrace-java-demo-service-0.0.1-SNAPSHOT.jar
+
 ```
 This will start four services, they will listen on ports 9091, 9092, 9093, 9094
 
